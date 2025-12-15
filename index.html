@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تحويل النص إلى كلام</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: "Tahoma", Arial;
+  background: linear-gradient(135deg,#020617,#020617,#020617);
+  color: #e5e7eb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  width: 95%;
+  max-width: 700px;
+  background: #020617;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.8);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #38bdf8;
+}
+
+textarea {
+  width: 100%;
+  height: 180px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  color: #e5e7eb;
+  padding: 15px;
+  font-size: 17px;
+  resize: none;
+}
+
+select {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  background: #020617;
+  color: #e5e7eb;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  font-size: 15px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+button {
+  flex: 1;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.play {
+  background: #22c55e;
+  color: #020617;
+}
+
+.stop {
+  background: #ef4444;
+  color: white;
+}
+
+footer {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>🔊 تحويل النص إلى كلام</h1>
+
+  <textarea id="text" placeholder="اكتب النص هنا..."></textarea>
+
+  <select id="voiceSelect"></select>
+
+  <div class="controls">
+    <button class="play" onclick="speak()">تشغيل</button>
+    <button class="stop" onclick="stopSpeak()">إيقاف</button>
+  </div>
+
+  <footer>
+    يعمل عبر الإنترنت – بدون تطبيق
+  </footer>
+</div>
+
+<script>
+let voices = [];
+let utterance;
+
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+  const select = document.getElementById("voiceSelect");
+  select.innerHTML = "";
+
+  voices.forEach((voice, i) => {
+    if (voice.lang.includes("ar") || voice.lang.includes("en")) {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = voice.name + " — " + voice.lang;
+      select.appendChild(option);
+    }
+  });
+}
+
+speechSynthesis.onvoiceschanged = loadVoices;
+
+function speak() {
+  const text = document.getElementById("text").value;
+  if (!text) return;
+
+  stopSpeak();
+
+  utterance = new SpeechSynthesisUtterance(text);
+  utterance.voice = voices[document.getElementById("voiceSelect").value];
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+
+  speechSynthesis.speak(utterance);
+}
+
+function stopSpeak() {
+  speechSynthesis.cancel();
+}
+</script>
+
+</body>
+</html>
